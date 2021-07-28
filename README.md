@@ -1,8 +1,8 @@
 # rust-lang-book-training
-Summary for a reading group of [The Rust Programming Language](https://doc.rust-lang.org/book/).
+Unofficial summary for a reading group of [The Rust Programming Language](https://doc.rust-lang.org/book/).
 
-[For Japanese](
-https://doc.rust-jp.rs/book-ja/)
+- [For Japanese](https://doc.rust-jp.rs/book-ja/)
+- [Playground](https://play.rust-lang.org/)
 
 ### Build for Raspberry Pi 4 Model B
 
