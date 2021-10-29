@@ -1,5 +1,5 @@
 pub struct Post {
-    state: Option<Box<State>>,
+    state: Option<Box<dyn State>>,
     content: String,
 }
 
@@ -42,12 +42,12 @@ impl Post {
 
 trait State {
     // cannot impl methods which return self
-    fn request_review(self: Box<Self>) -> Box<State>;
-    fn approve(self: Box<Self>) -> Box<State>;
+    fn request_review(self: Box<Self>) -> Box<dyn State>;
+    fn approve(self: Box<Self>) -> Box<dyn State>;
     fn content<'a>(&self, post: &'a Post) -> &'a str {
         ""
     }
-    fn reject(self: Box<Self>) -> Box<State>;
+    fn reject(self: Box<Self>) -> Box<dyn State>;
     fn can_edit_text<'a>(&self, post: &'a Post) -> &'a bool {
         &false
     }
@@ -56,14 +56,14 @@ trait State {
 struct Draft {}
 
 impl State for Draft {
-    fn request_review(self: Box<Self>) -> Box<State> {
+    fn request_review(self: Box<Self>) -> Box<dyn State> {
         Box::new(PendingReview {})
     }
-    fn approve(self: Box<Self>) -> Box<State> {
+    fn approve(self: Box<Self>) -> Box<dyn State> {
         // invalid action
         self
     }
-    fn reject(self: Box<Self>) -> Box<State> {
+    fn reject(self: Box<Self>) -> Box<dyn State> {
         // invalid action
         self
     }
@@ -75,13 +75,13 @@ impl State for Draft {
 struct PendingReview {}
 
 impl State for PendingReview {
-    fn request_review(self: Box<Self>) -> Box<State> {
+    fn request_review(self: Box<Self>) -> Box<dyn State> {
         self
     }
-    fn approve(self: Box<Self>) -> Box<State> {
+    fn approve(self: Box<Self>) -> Box<dyn State> {
         Box::new(PendingSecondReview {})
     }
-    fn reject(self: Box<Self>) -> Box<State> {
+    fn reject(self: Box<Self>) -> Box<dyn State> {
         Box::new(Draft {})
     }
 }
@@ -89,13 +89,13 @@ impl State for PendingReview {
 struct PendingSecondReview {}
 
 impl State for PendingSecondReview {
-    fn request_review(self: Box<Self>) -> Box<State> {
+    fn request_review(self: Box<Self>) -> Box<dyn State> {
         self
     }
-    fn approve(self: Box<Self>) -> Box<State> {
+    fn approve(self: Box<Self>) -> Box<dyn State> {
         Box::new(Published {})
     }
-    fn reject(self: Box<Self>) -> Box<State> {
+    fn reject(self: Box<Self>) -> Box<dyn State> {
         Box::new(Draft {})
     }
 }
@@ -103,18 +103,18 @@ impl State for PendingSecondReview {
 struct Published {}
 
 impl State for Published {
-    fn request_review(self: Box<Self>) -> Box<State> {
+    fn request_review(self: Box<Self>) -> Box<dyn State> {
         // invalid action
         self
     }
-    fn approve(self: Box<Self>) -> Box<State> {
+    fn approve(self: Box<Self>) -> Box<dyn State> {
         // invalid action
         self
     }
     fn content<'a>(&self, post: &'a Post) -> &'a str {
         &post.content
     }
-    fn reject(self: Box<Self>) -> Box<State> {
+    fn reject(self: Box<Self>) -> Box<dyn State> {
         // invalid action
         self
     }
